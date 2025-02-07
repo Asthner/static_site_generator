@@ -30,3 +30,18 @@ class HTMLNode():
     
     def get_props(self):
         return self.__props
+    
+class LeafNode(HTMLNode):
+
+    def __init__(self, tag, value, props=None):
+        super().__init__(tag, value, None, props)
+
+    def to_html(self):
+        if self.get_value() == None:
+            raise ValueError("invalid HTML: no value")
+        if self.get_tag() == None:
+            return self.get_value()
+        return f"<{self.get_tag()}{self.props_to_html()}>{self.get_value()}</{self.get_tag()}>"
+    
+    def __repr__(self):
+        return f'LeafNode({self.get_tag()}, {self.get_value()}, {self.get_props()})'   
