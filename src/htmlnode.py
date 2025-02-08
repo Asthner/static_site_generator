@@ -1,3 +1,5 @@
+from functools import reduce
+
 class HTMLNode():
     def __init__(self, tag=None, value=None, children=None, props=None):
         self.__tag = tag
@@ -32,7 +34,6 @@ class HTMLNode():
         return self.__props
     
 class LeafNode(HTMLNode):
-
     def __init__(self, tag, value, props=None):
         super().__init__(tag, value, None, props)
 
@@ -41,7 +42,21 @@ class LeafNode(HTMLNode):
             raise ValueError("invalid HTML: no value")
         if self.get_tag() == None:
             return self.get_value()
-        return f"<{self.get_tag()}{self.props_to_html()}>{self.get_value()}</{self.get_tag()}>"
+        return f'<{self.get_tag()}{self.props_to_html()}>{self.get_value()}</{self.get_tag()}>'
     
     def __repr__(self):
-        return f'LeafNode({self.get_tag()}, {self.get_value()}, {self.get_props()})'   
+        return f'LeafNode({self.get_tag()}, {self.get_value()}, {self.get_props()})'
+
+class ParentNode(HTMLNode):
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag, None, children, props)
+
+    def to_html(self):
+        if self.get_tag() == None:
+            raise ValueError("invalid HTML: no tag")
+        if self.get_children() == None:
+            raise ValueError("invalid HTML: no children")
+        return f'<{self.get_tag()}>{reduce(lambda acc, child: acc+child.to_html(), self.get_children(), "")}</{self.get_tag()}>'
+    
+    def __repr__(self):
+        return f'ParentNode({self.get_tag()}, children: {self.get_children()}, {self.get_props()})'
